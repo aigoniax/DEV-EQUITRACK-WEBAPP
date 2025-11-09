@@ -8,6 +8,7 @@ import { API_ENDPOINTS } from "../util/apiEndpoints.js";
 import toast from "react-hot-toast";
 import { LoaderCircle } from "lucide-react";
 import ProfilePhotoSelector from "../components/ProfilePhotoSelector.jsx";
+import uploadProfileImage from "../util/uploadProfileImage.js";
 
 const Signup = () => {
     const[fullname, setFullname] = useState("");
@@ -22,7 +23,10 @@ const Signup = () => {
     //make kog api call diri
     const handleSubmit = async(e) => {
         e.preventDefault();
+        let profileImageUrl = "";
         setIsLoading(true);
+
+
 
         //basic validation diri
         if(!fullname.trim()){
@@ -46,10 +50,16 @@ const Signup = () => {
         setError("");
         //SIGNUP API call diri
         try{
+            //upload image if present
+            if(profilePhoto){
+                const imageUrl = await uploadProfileImage(profilePhoto);
+                profileImageUrl = imageUrl || "";
+            }
             const response = await axiosConfig.post(API_ENDPOINTS.REGISTER, {
                 fullname,
                 email,
                 password,
+                profileImageUrl,
             })
             if(response.status === 201){
                 toast.success("Profile created successfully.");

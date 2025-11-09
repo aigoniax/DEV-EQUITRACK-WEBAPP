@@ -15,12 +15,14 @@ const ProfilePhotoSelector = ({image, setImage}) => {
         }
     }
 
-    const handleRemoveImage = () => {
+    const handleRemoveImage = (e) => {
+        e.preventDefault();
         setImage(null);
         setPreviewUrl(null);
     }
     
-    const onChooseFile = () => {
+    const onChooseFile = (e) => {
+        e.preventDefault();
         inputRef.current?.click();
     }
 
