@@ -2,7 +2,7 @@ import Dashboard from "../components/Dashboard";
 
 const Expense = () => {
     return (
-        <Dashboard>
+        <Dashboard activeMenu="Expense">
                 This is expense page
         </Dashboard>
     )

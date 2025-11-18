@@ -2,7 +2,7 @@ import Dashboard from "../components/Dashboard";
 
 const Filter = () => {
     return (
-        <Dashboard>
+        <Dashboard activeMenu="Filters">
                 This is filter page
         </Dashboard>
     )   
