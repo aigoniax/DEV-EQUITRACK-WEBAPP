@@ -8,3 +8,14 @@ body{
   background-color: #fcfbfc;
   overflow-x: hidden;
 }
+
+.add-btn {
+    background-color: #3b82f6; /* or your preferred color */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 1.975rem;
+}
+
+.add-btn:hover {
+    background-color: #2563eb;
+}
