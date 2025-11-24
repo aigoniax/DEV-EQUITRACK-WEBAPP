@@ -8,7 +8,7 @@ const TransactionInfoCard = ({icon, title, date, amount, type, hideDeleteBtn, on
                 {icon ? (
                     <img src={icon} alt={title} className="w-6 h-6" />
                 ): (
-                    <UtensilsCrossed className="text-purple-500"/>
+                    <UtensilsCrossed className="text-purple-800"/>
                 )}
             </div>       
         </div>

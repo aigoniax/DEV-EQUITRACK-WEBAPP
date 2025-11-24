@@ -5,7 +5,7 @@ import moment from "moment";
 const IncomeList = ({transactions, onDelete}) => {
     return (
         <div className="card">
-           <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
                 <h5 className="text-lg">Income Sources</h5>
                 <div className="flex items-center justify-end gap-2">
                     <button className="card-btn">
@@ -24,7 +24,7 @@ const IncomeList = ({transactions, onDelete}) => {
                         key={income.id}
                         title={income.name}
                         icon={income.icon}
-                        date={moment(income.date).format('DD MMM YYYY')}
+                        date={moment(income.date).format('Do MMM YYYY')}
                         amount={income.amount}
                         type="income"
                         onClick={() => onDelete(income.id)}
