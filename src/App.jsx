@@ -9,24 +9,25 @@ import { Toaster } from "react-hot-toast";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import Home from "./pages/Home";
+import LandingPage from "./pages/LandingPage";
 
 const App = () => {
-
   return(
     <>
       <Toaster />
       <BrowserRouter>
         <Routes>
             <Route path="/" element={<Root />} />
-            <Route path = "/dashboard" element={<Home />} />
-            <Route path = "/income" element={<Income />} />
-            <Route path = "/expense" element={<Expense />} />
-            <Route path = "/category" element={<Category />} />
-            <Route path = "/filter" element={<Filter />} />
-            <Route path = "/login" element={<Login />} />
-            <Route path = "/signup" element={<Signup />} />
-            <Route path = "/aboutus" element={<AboutUs />} />
-            <Route path = "/contactus" element={<ContactUs />} />
+            <Route path="/landingpage" element={<LandingPage />} />
+            <Route path="/dashboard" element={<Home />} />
+            <Route path="/income" element={<Income />} />
+            <Route path="/expense" element={<Expense />} />
+            <Route path="/category" element={<Category />} />
+            <Route path="/filter" element={<Filter />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/aboutus" element={<AboutUs />} />
+            <Route path="/contactus" element={<ContactUs />} />
         </Routes>
     </BrowserRouter>
     </>
@@ -38,7 +39,7 @@ const Root = () => {
   return isAuthenticated ? (
     <Navigate to="/dashboard" />
   ) : (
-    <Navigate to="/login" />
+    <Navigate to="/landingpage" />
   );
 }
 

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Mail, Phone, MapPin, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // --- SVG Icons ---
 const LogoIcon = () => (
   <svg className="h-8 w-auto text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
   </svg>
 );
 
@@ -185,14 +186,14 @@ const Header = () => {
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="transform transition-transform group-hover:scale-110 group-hover:rotate-12">
-              <LogoIcon />
+              <Wallet className="h-8 w-8 text-yellow-400" strokeWidth={2.5} />
             </div>
             <span className="text-2xl font-black text-white tracking-tight">
               Equi<span className="text-yellow-400">Track</span>
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/dashboard" className="text-gray-200 hover:text-white transition-colors font-medium">
+            <Link to="/landingpage" className="text-gray-200 hover:text-white transition-colors font-medium">
               Home
             </Link>
             <Link to="/aboutus" className="text-yellow-400 font-semibold relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400">
@@ -635,7 +636,7 @@ const AboutUs = () => {
                   </div>
                   <span className="text-2xl font-black text-white">
                     Equi<span className="text-yellow-400">Track</span>
-                  </span>
+                  </span>   
                 </Link>
                 <p className="text-gray-300 max-w-md leading-relaxed mb-6">
                   Built with passion by CIT-U students. Making financial management accessible, secure, and empowering for everyone.
@@ -660,7 +661,7 @@ const AboutUs = () => {
               <div>
                 <h4 className="text-white font-bold mb-4 text-lg">Quick Links</h4>
                 <ul className="space-y-3">
-                  <li><Link to="/dashboard" className="text-gray-300 hover:text-yellow-400 transition-colors">Home</Link></li>
+                  <li><Link to="/landingpage" className="text-gray-300 hover:text-yellow-400 transition-colors">Home</Link></li>
                   <li><Link to="/aboutus" className="text-gray-300 hover:text-yellow-400 transition-colors">About Us</Link></li>
                   <li><Link to="/contactus" className="text-gray-300 hover:text-yellow-400 transition-colors">Contact</Link></li>
                   <li><Link to="/login" className="text-gray-300 hover:text-yellow-400 transition-colors">Login</Link></li>
