@@ -105,52 +105,64 @@ const Category = () => {
     }
 
     return (
-        <Dashboard activeMenu="Category">
-            <Toaster position="top-center" />
-            <div className="my-5 mx-auto">
-                {/* Add button to add category */}
-                <div className="flex justify-between items-center mb-5">
-                    <h2 className="text-2xl font-semibold">All Categories</h2>
-                    <button 
-                        onClick={() => setOpenAddCategoryModal(true)}
-                        className="add-btn flex items-center gap-1">
-                        <Plus size={15} />
-                        Add Category
-                    </button>
-                </div>
-
-                {/* Category list */}
-                <CategoryList categories={categoryData} onEditCategory={handleEditCategory}/>
-
-                {/* Adding category modal */}
-                <Modal
-                    isOpen={openAddCategoryModal}
-                    onClose={() => setOpenAddCategoryModal(false)}
-                    title="Add Category"
-                >
-                    <AddCategoryForm onAddCategory={handleAddCategory}/>
-                </Modal>
-
-                {/* Updating category modal */}
-                <Modal
-                    onClose={() => {
-                        setOpenEditCategoryModal(false);
-                        setSelectedCategory(null);
-                    }}
-                    isOpen={openEditCategoryModal}
-                    title="Update Category"
-                >
-                    
-
-                    <AddCategoryForm
-                        initialCategoryData={selectedCategory}
-                        onAddCategory={handleUpdateCategory}
-                        isEditing={true}
-
-                    />
-                </Modal>
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#084062] to-blue-900 relative overflow-hidden">
+            {/* Background Effects */}
+            <div className="absolute inset-0 pointer-events-none opacity-10">
+                <div className="absolute top-1/4 left-10 md:left-20 w-80 h-80 bg-yellow-400 rounded-full blur-3xl animate-pulse"></div>
+                <div
+                    className="absolute bottom-1/4 right-10 md:right-20 w-96 h-96 bg-blue-400 rounded-full blur-3xl animate-pulse"
+                    style={{ animationDelay: "2s" }}
+                ></div>
+                <div
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-400 rounded-full blur-3xl animate-pulse"
+                    style={{ animationDelay: "1s" }}
+                ></div>
             </div>
-        </Dashboard>
+
+            <Dashboard activeMenu="Category">
+                <Toaster position="top-center" />
+                <div className="my-5 mx-auto relative z-10">
+                    {/* Add button to add category */}
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-bold text-white">All Categories</h2>
+                        <button 
+                            onClick={() => setOpenAddCategoryModal(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-yellow-400 text-gray-900 rounded-lg font-bold shadow-lg hover:shadow-yellow-400/40 hover:scale-105 transition-all">
+                            <Plus size={18} />
+                            Add Category
+                        </button>
+                    </div>
+
+                    {/* Category list */}
+                    <CategoryList categories={categoryData} onEditCategory={handleEditCategory}/>
+
+                    {/* Adding category modal */}
+                    <Modal
+                        isOpen={openAddCategoryModal}
+                        onClose={() => setOpenAddCategoryModal(false)}
+                        title="Add Category"
+                    >
+                        <AddCategoryForm onAddCategory={handleAddCategory}/>
+                    </Modal>
+
+                    {/* Updating category modal */}
+                    <Modal
+                        onClose={() => {
+                            setOpenEditCategoryModal(false);
+                            setSelectedCategory(null);
+                        }}
+                        isOpen={openEditCategoryModal}
+                        title="Update Category"
+                    >
+                        <AddCategoryForm
+                            initialCategoryData={selectedCategory}
+                            onAddCategory={handleUpdateCategory}
+                            isEditing={true}
+                        />
+                    </Modal>
+                </div>
+            </Dashboard>
+        </div>
     )
 }
 

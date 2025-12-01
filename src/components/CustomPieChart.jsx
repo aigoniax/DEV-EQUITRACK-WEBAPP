@@ -16,7 +16,7 @@ const CustomPieChart = ({ data = [], label = "Expense Breakdown", totalAmount, c
         fill="white"
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
-        className="font-semibold text-sm"
+        className="font-black text-sm drop-shadow-lg"
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
@@ -26,9 +26,9 @@ const CustomPieChart = ({ data = [], label = "Expense Breakdown", totalAmount, c
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white px-4 py-2 rounded-lg shadow-lg border border-gray-200">
-          <p className="font-semibold text-gray-800">{payload[0].name}</p>
-          <p className="text-sm text-gray-600">
+        <div className="bg-slate-800/95 backdrop-blur-sm px-4 py-2 rounded-xl shadow-2xl border border-yellow-400/30">
+          <p className="font-black text-white tracking-tight">{payload[0].name}</p>
+          <p className="text-sm text-gray-300 font-semibold">
             ₱{payload[0].value.toLocaleString()}
           </p>
         </div>
@@ -42,8 +42,8 @@ const CustomPieChart = ({ data = [], label = "Expense Breakdown", totalAmount, c
   return (
     <div className="w-full">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-2">{label}</h2>
-        <p className="text-gray-600">{totalAmount || `₱${total.toLocaleString()}`}</p>
+        <h2 className="text-xl font-black text-white tracking-tight mb-2">{label}</h2>
+        <p className="text-gray-300 font-semibold">{totalAmount || `₱${total.toLocaleString()}`}</p>
       </div>
 
       <div className="flex flex-col lg:flex-row items-center gap-8">
@@ -63,7 +63,11 @@ const CustomPieChart = ({ data = [], label = "Expense Breakdown", totalAmount, c
                 animationDuration={800}
               >
                 {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={COLORS[index % COLORS.length]}
+                    className="hover:opacity-80 transition-opacity cursor-pointer"
+                  />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
@@ -74,17 +78,23 @@ const CustomPieChart = ({ data = [], label = "Expense Breakdown", totalAmount, c
         <div className="w-full lg:w-1/3">
           <div className="space-y-3">
             {data.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+              <div 
+                key={index} 
+                className="flex items-center justify-between p-3 bg-slate-800/30 rounded-xl hover:bg-slate-700/40 transition-all border border-white/5 hover:border-white/10"
+              >
                 <div className="flex items-center gap-3">
                   <div 
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    className="w-4 h-4 rounded-full shadow-lg"
+                    style={{ 
+                      backgroundColor: COLORS[index % COLORS.length],
+                      boxShadow: `0 0 10px ${COLORS[index % COLORS.length]}40`
+                    }}
                   />
-                  <span className="font-medium text-gray-700">{item.name}</span>
+                  <span className="font-semibold text-white">{item.name}</span>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-gray-800">₱{(item.amount || item.value || 0).toLocaleString()}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="font-bold text-white">₱{(item.amount || item.value || 0).toLocaleString()}</p>
+                  <p className="text-xs text-gray-400 font-medium">
                     {(((item.amount || item.value || 0) / total) * 100).toFixed(1)}%
                   </p>
                 </div>

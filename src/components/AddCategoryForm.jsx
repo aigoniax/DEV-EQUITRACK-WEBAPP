@@ -41,8 +41,7 @@ const AddCategoryForm = ({ onAddCategory, initialCategoryData, isEditing, onClos
     }
 
     return (
-        <div className="p-4">
-
+        <div className="p-6">
             <EmojiPickerPopup 
                 icon={category.icon}
                 onSelect={(selectedIcon) => handleChange("icon", selectedIcon)} 
@@ -69,7 +68,7 @@ const AddCategoryForm = ({ onAddCategory, initialCategoryData, isEditing, onClos
                     type="button"
                     onClick={handleSubmit}
                     disabled={loading}
-                    className="add-btn add-btn-fill">
+                    className="px-6 py-2.5 bg-yellow-400 text-gray-900 rounded-lg font-bold shadow-lg hover:shadow-yellow-400/40 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center gap-2">
                     {loading ? (
                         <>
                             <LoaderCircle className="w-4 h-4 animate-spin"/>
