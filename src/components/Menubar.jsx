@@ -1,8 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Menu, User, X } from "lucide-react";
-import { assets } from "../assets/assets.js";
+import { LogOut, Menu, User, X, Wallet } from "lucide-react";
 import Sidebar from "./Sidebar";
 
 const Menubar = ({ activeMenu }) => {
@@ -13,7 +12,6 @@ const Menubar = ({ activeMenu }) => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.clear();
         clearUser();
         setShowDropdown(false);
         navigate("/login");
@@ -56,7 +54,7 @@ const Menubar = ({ activeMenu }) => {
                     </button>
 
                     <div className="flex items-center gap-2">
-                        <img src={assets.logo} alt="logo" className="h-10 w-10" />
+                        <Wallet className="h-8 w-8 text-yellow-400" strokeWidth={2.5} />
                         <span className="text-lg font-medium text-black truncate">EquiTrack</span>
                     </div>
                 </div>
