@@ -16,32 +16,31 @@ const Home = () => {
     useUser();
 
     const navigate = useNavigate();
-    const[dashboardData, setDashboardData] = useState(null);
-    const[loading, setLoading] = useState(false);
-
-    const fetchDashboardData = async() => {
-        if(loading) return;
-
-        setLoading(true);
-
-        try{
-            const response = await axiosConfig.get(API_ENDPOINTS.DASHBOARD_DATA);
-
-            if(response.status === 200){
-                setDashboardData(response.data);
-            }
-        }catch(error){
-            console.error("Something went wrong while fetching dashboard data: ", error);
-            toast.error("Something went wrong!");
-        }finally{
-            setLoading(false);
-        }
-    }
+    const [dashboardData, setDashboardData] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        const fetchDashboardData = async () => {
+            if (loading) return;
+
+            setLoading(true);
+
+            try {
+                const response = await axiosConfig.get(API_ENDPOINTS.DASHBOARD_DATA);
+
+                if (response.status === 200) {
+                    setDashboardData(response.data);
+                }
+            } catch (error) {
+                console.error("Something went wrong while fetching dashboard data: ", error);
+                toast.error("Something went wrong!");
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchDashboardData();
-        return () => {};
-    }, []);
+    }, []); // Empty dependency array - only runs once on mount
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#084062] to-blue-900 relative overflow-hidden">
@@ -116,7 +115,7 @@ const Home = () => {
                 </div>
             </Dashboard>
         </div>
-    )   
-}
+    );
+};
 
 export default Home;

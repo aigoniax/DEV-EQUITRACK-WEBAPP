@@ -13,7 +13,7 @@ export const API_ENDPOINTS = {
     GET_ALL_EXPENSES: "/expenses/all",
     CATEGORY_BY_TYPE: (type) => `/categories/${type}`,
     ADD_INCOME: "/incomes/all",
-    ADD_EXPENSE: "expenses/all",
+    ADD_EXPENSE: "/expenses/all",
     DELETE_INCOME: (incomeId) => `/incomes/${incomeId}`,
     DELETE_EXPENSE: (expenseId) => `/expenses/${expenseId}`,
     INCOME_EXCEL_DOWNLOAD: "/excel/download/income",

@@ -5,6 +5,7 @@ import { API_ENDPOINTS } from "../util/apiEndpoints.js";
 import toast from "react-hot-toast";
 import { LoaderCircle, Eye, EyeOff, Wallet, Shield, TrendingUp, CheckCircle, Zap, User, Camera } from "lucide-react";
 import uploadProfileImage from "../util/uploadProfileImage.js";
+import { validateEmail } from "../util/validation.js";
 
 // --- ANIMATION STYLE ---
 const PageAnimation = () => (
