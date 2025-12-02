@@ -18,6 +18,9 @@ const Home = () => {
     const navigate = useNavigate();
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(false);
+    useEffect(() => {
+    console.log("Recent incomes:", dashboardData?.recent5Expenses);
+}, [dashboardData]);
 
     useEffect(() => {
         const fetchDashboardData = async () => {

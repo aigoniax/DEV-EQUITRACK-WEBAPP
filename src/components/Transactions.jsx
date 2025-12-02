@@ -27,7 +27,7 @@ const Transactions = ({transactions, onMore, type, title}) => {
                       icon={item.icon}
                       date={moment(item.date).format("Do MMM YYYY")}
                       amount={item.amount}
-                      type={item.type}
+                      type={type}
                       hideDeleteBtn                          
                     />
                 ))}
