@@ -98,86 +98,81 @@ const Income = () => {
 
     // Download Excel
     const handleDownloadIncomeDetails = async () => {
-    let loadingToast;
+        let loadingToast;
 
-    try {
-        loadingToast = toast.loading("Downloading income details...");
+        try {
+            loadingToast = toast.loading("Downloading income details...");
 
-        // 🔥 Correct request for Excel file
-        const response = await axiosConfig.get(
-            API_ENDPOINTS.INCOME_EXCEL_DOWNLOAD,
-            {
-                responseType: "arraybuffer",
-                timeout: 30000,
-                headers: {
-                    "Content-Type": "application/octet-stream",
-                    Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                },
+            const response = await axiosConfig.get(
+                API_ENDPOINTS.INCOME_EXCEL_DOWNLOAD,
+                {
+                    responseType: "arraybuffer",
+                    timeout: 30000,
+                    headers: {
+                        "Content-Type": "application/octet-stream",
+                        Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    },
+                }
+            );
+
+            toast.dismiss(loadingToast);
+
+            // Extract filename
+            let filename = "income_details.xlsx";
+            const contentDisposition = response.headers["content-disposition"];
+
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename="?(.+)"?/);
+                if (match && match[1]) {
+                    filename = match[1];
+                }
             }
-        );
 
-        toast.dismiss(loadingToast);
+            // Create Blob
+            const blob = new Blob([response.data], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            });
 
-        // 🔥 FIX: Remove the invalid Blob check
-        // Excel responses will NOT be Blob at this stage
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = filename;
 
-        // Extract filename
-        let filename = "income_details.xlsx";
-        const contentDisposition = response.headers["content-disposition"];
+            document.body.appendChild(link);
+            link.click();
 
-        if (contentDisposition) {
-            const match = contentDisposition.match(/filename="?(.+)"?/);
-            if (match && match[1]) {
-                filename = match[1];
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+            toast.success("Income details downloaded successfully");
+
+        } catch (error) {
+            if (loadingToast) toast.dismiss(loadingToast);
+
+            console.error("Error downloading income details:", error);
+
+            // Handle server error returned as Blob
+            if (error.response?.data instanceof Blob) {
+                try {
+                    const text = await error.response.data.text();
+                    const json = JSON.parse(text);
+                    toast.error(json.message || "Failed to download income details");
+                    return;
+                } catch (e) {}
+            }
+
+            if (error.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else if (error.code === "ECONNABORTED") {
+                toast.error("Download timeout - please try again");
+            } else if (!error.response) {
+                toast.error("Network error - please check your connection");
+            } else {
+                toast.error("Failed to download income details");
             }
         }
-
-        // 🔥 Create Blob correctly
-        const blob = new Blob([response.data], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
-
-        // Create download link
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = filename;
-
-        document.body.appendChild(link);
-        link.click();
-
-        link.remove();
-        window.URL.revokeObjectURL(url);
-
-        toast.success("Income details downloaded successfully");
-
-    } catch (error) {
-        if (loadingToast) toast.dismiss(loadingToast);
-
-        console.error("Error downloading income details:", error);
-
-        // Handle server error returned as Blob
-        if (error.response?.data instanceof Blob) {
-            try {
-                const text = await error.response.data.text();
-                const json = JSON.parse(text);
-                toast.error(json.message || "Failed to download income details");
-                return;
-            } catch (e) {}
-        }
-
-        if (error.response?.data?.message) {
-            toast.error(error.response.data.message);
-        } else if (error.code === "ECONNABORTED") {
-            toast.error("Download timeout - please try again");
-        } else if (!error.response) {
-            toast.error("Network error - please check your connection");
-        } else {
-            toast.error("Failed to download income details");
-        }
-    }
-};
-
+    };
 
     // Email Excel
     const handleEmailIncomeDetails = async () => {
@@ -206,30 +201,45 @@ const Income = () => {
     }, []);
 
     return (
-        <Dashboard activeMenu="Income">
-            <div className="my-5 mx-auto">
-                <div className="grid grid-cols-1 gap-6">
-                    <div>
-                        <IncomeOverview transactions={incomeData} onAddIncome={() => setOpenAddIncomeModal(true)} />
-                    </div>
-
-                    <IncomeList 
-                        transactions={incomeData} 
-                        onDelete={(id) => setOpenDeleteAlert({ show: true, data: id })}
-                        onDownload={handleDownloadIncomeDetails}
-                        onEmail={handleEmailIncomeDetails}
-                    />
-
-                    <Modal isOpen={openAddIncomeModal} onClose={() => setOpenAddIncomeModal(false)} title="Add Income">
-                        <AddIncomeForm onAddIncome={handleAddIncome} categories={categories} />
-                    </Modal>
-
-                    <Modal isOpen={openDeleteAlert.show} onClose={() => setOpenDeleteAlert({ show: false, data: null })} title="Delete Income">
-                        <DeleteAlert content="Are you sure you want to delete this income details?" onDelete={() => deleteIncome(openDeleteAlert.data)} />
-                    </Modal>
-                </div>
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#084062] to-blue-900 relative overflow-hidden">
+            {/* Background Effects matching landing page */}
+            <div className="absolute inset-0 pointer-events-none opacity-10">
+                <div className="absolute top-1/4 left-10 md:left-20 w-80 h-80 bg-yellow-400 rounded-full blur-3xl animate-pulse"></div>
+                <div
+                    className="absolute bottom-1/4 right-10 md:right-20 w-96 h-96 bg-blue-400 rounded-full blur-3xl animate-pulse"
+                    style={{ animationDelay: "2s" }}
+                ></div>
+                <div
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-400 rounded-full blur-3xl animate-pulse"
+                    style={{ animationDelay: "1s" }}
+                ></div>
             </div>
-        </Dashboard>
+
+            <Dashboard activeMenu="Income">
+                <div className="my-5 mx-auto relative z-10">
+                    <div className="grid grid-cols-1 gap-6">
+                        <div>
+                            <IncomeOverview transactions={incomeData} onAddIncome={() => setOpenAddIncomeModal(true)} />
+                        </div>
+
+                        <IncomeList 
+                            transactions={incomeData} 
+                            onDelete={(id) => setOpenDeleteAlert({ show: true, data: id })}
+                            onDownload={handleDownloadIncomeDetails}
+                            onEmail={handleEmailIncomeDetails}
+                        />
+
+                        <Modal isOpen={openAddIncomeModal} onClose={() => setOpenAddIncomeModal(false)} title="Add Income">
+                            <AddIncomeForm onAddIncome={handleAddIncome} categories={categories} />
+                        </Modal>
+
+                        <Modal isOpen={openDeleteAlert.show} onClose={() => setOpenDeleteAlert({ show: false, data: null })} title="Delete Income">
+                            <DeleteAlert content="Are you sure you want to delete this income details?" onDelete={() => deleteIncome(openDeleteAlert.data)} />
+                        </Modal>
+                    </div>
+                </div>
+            </Dashboard>
+        </div>
     );
 };
 

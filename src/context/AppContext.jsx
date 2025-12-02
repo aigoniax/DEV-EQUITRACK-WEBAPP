@@ -1,19 +1,19 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useCallback, useMemo } from "react";
 
 export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
-    const clearUser = () => {
+    const clearUser = useCallback(() => {
         setUser(null);
-    }
+    }, []);
     
-    const contextValue = {
+    const contextValue = useMemo(() => ({
         user,
         setUser,
         clearUser
-    };
+    }), [user, clearUser]);
 
     return(
         <AppContext.Provider value={contextValue}>

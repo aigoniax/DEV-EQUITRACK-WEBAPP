@@ -11,19 +11,17 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 const Profile = () => {
-    useUser(); // ensures user is loaded or redirected
+    useUser();
     const { user, setUser } = useContext(AppContext);
     const navigate = useNavigate();
 
-    // State for dashboard statistics
     const [stats, setStats] = useState({
         totalBalance: 0,
         totalIncome: 0,
-        totalExpense: 0, // Match the key from dashboard API
+        totalExpense: 0,
         recentTransactions: []
     });
 
-    // Form state
     const [form, setForm] = useState({
         fullName: "",
         phone: "",
@@ -34,7 +32,6 @@ const Profile = () => {
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
-    // Initialize form with user data
     useEffect(() => {
         if (user) {
             setForm({
@@ -45,13 +42,10 @@ const Profile = () => {
         }
     }, [user]);
 
-    // Fetch dashboard statistics
     useEffect(() => {
         const fetchStats = async () => {
             try {
                 const response = await axiosConfig.get(API_ENDPOINTS.DASHBOARD_DATA);
-                console.log("Dashboard data:", response.data); // Debug log
-                
                 if (response.status === 200) {
                     setStats({
                         totalBalance: response.data.totalBalance || 0,
@@ -68,41 +62,28 @@ const Profile = () => {
         fetchStats();
     }, []);
 
-    // Handler functions
     const handleChange = (key) => (e) => {
         const value = e?.target ? e.target.value : e;
         setForm((prev) => ({ ...prev, [key]: value }));
     };
 
-    // Handle form submission
     const handleSubmit = async () => {
         setLoading(true);
 
         try {
             let profileImageUrl = user?.profileImageUrl || null;
 
-            // Upload image if changed
             if (image) {
-                console.log("Uploading image...");
                 profileImageUrl = await uploadProfileImage(image);
-                console.log("Image uploaded:", profileImageUrl);
             }
 
             const payload = {
                 fullName: form.fullName,
-                // DO NOT include email - backends don't allow email updates
                 phone: form.phone,
                 bio: form.bio,
                 profileImageUrl,
             };
 
-            console.log("=== DEBUG INFO ===");
-            console.log("Token exists:", !!localStorage.getItem("token"));
-            console.log("Submitting payload:", payload);
-            console.log("Base endpoint:", API_ENDPOINTS.GET_USER_INFO);
-            console.log("==================");
-
-            // Try different endpoints and methods
             const endpointsToTry = [
                 { method: 'put', url: API_ENDPOINTS.GET_USER_INFO },
                 { method: 'patch', url: API_ENDPOINTS.GET_USER_INFO },
@@ -119,8 +100,6 @@ const Profile = () => {
 
             for (const { method, url } of endpointsToTry) {
                 try {
-                    console.log(`Trying ${method.toUpperCase()} ${url}...`);
-                    
                     if (method === 'put') {
                         response = await axiosConfig.put(url, payload);
                     } else if (method === 'patch') {
@@ -129,20 +108,13 @@ const Profile = () => {
                         response = await axiosConfig.post(url, payload);
                     }
                     
-                    console.log(`✅ SUCCESS with ${method.toUpperCase()} ${url}`);
-                    console.log("Response:", response.data);
                     succeeded = true;
                     break;
                 } catch (error) {
                     const status = error?.response?.status;
-                    console.log(`❌ ${method.toUpperCase()} ${url} failed with status ${status}`);
                     lastError = error;
                     
-                    // If we get 404, try next endpoint
-                    // If we get 403/401, might be auth issue, but keep trying
-                    // If we get 405, wrong method for this endpoint
                     if (status !== 404 && status !== 405 && status !== 403) {
-                        // For other errors, stop trying
                         throw error;
                     }
                 }
@@ -161,30 +133,19 @@ const Profile = () => {
                 toast.error("Failed to update profile");
             }
         } catch (err) {
-            console.error("=== ERROR DETAILS ===");
-            console.error("Error:", err);
-            console.error("Status:", err?.response?.status);
-            console.error("Response data:", err?.response?.data);
-            console.error("Headers sent:", err?.config?.headers);
-            console.error("URL tried:", err?.config?.url);
-            console.error("Method tried:", err?.config?.method);
-            console.error("=====================");
-            
             const status = err?.response?.status;
             const errorData = err?.response?.data;
             
             let errorMessage = "Failed to update profile";
             
             if (status === 403) {
-                errorMessage = `Access denied. The backend /profile endpoint might be read-only. Check your backend docs.`;
+                errorMessage = `Access denied. The backend /profile endpoint might be read-only.`;
             } else if (status === 401) {
                 errorMessage = "Session expired. Please login again.";
             } else if (status === 400) {
                 errorMessage = `Bad request: ${errorData?.message || "Invalid data"}`;
             } else if (status === 404) {
-                errorMessage = "Profile update endpoint not found. Need to check backend API docs.";
-            } else if (status === 405) {
-                errorMessage = "Method not allowed. Backend might need different HTTP method.";
+                errorMessage = "Profile update endpoint not found.";
             } else if (errorData?.message) {
                 errorMessage = errorData.message;
             }
@@ -207,7 +168,6 @@ const Profile = () => {
         }
     };
 
-    // Utility functions
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-PH', {
             style: 'currency',
@@ -231,14 +191,12 @@ const Profile = () => {
             return "N/A";
         }
         
-        // Count category occurrences
         const categoryCounts = {};
         stats.recentTransactions.forEach(transaction => {
             const category = transaction.category || "Uncategorized";
             categoryCounts[category] = (categoryCounts[category] || 0) + 1;
         });
         
-        // Find most common category
         let maxCount = 0;
         let mostUsed = "N/A";
         for (const [category, count] of Object.entries(categoryCounts)) {
@@ -252,26 +210,37 @@ const Profile = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
-            <div className="max-w-6xl mx-auto space-y-6">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#084062] to-blue-900 relative overflow-hidden p-4 md:p-8">
+            {/* Background Effects */}
+            <div className="absolute inset-0 pointer-events-none opacity-10">
+                <div className="absolute top-1/4 left-10 md:left-20 w-80 h-80 bg-yellow-400 rounded-full blur-3xl animate-pulse"></div>
+                <div
+                    className="absolute bottom-1/4 right-10 md:right-20 w-96 h-96 bg-blue-400 rounded-full blur-3xl animate-pulse"
+                    style={{ animationDelay: "2s" }}
+                ></div>
+                <div
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-400 rounded-full blur-3xl animate-pulse"
+                    style={{ animationDelay: "1s" }}
+                ></div>
+            </div>
 
+            <div className="max-w-6xl mx-auto space-y-6 relative z-10">
                 <button
                     onClick={() => navigate('/dashboard')}
-                    className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors font-medium group"
+                    className="flex items-center gap-2 text-gray-300 hover:text-yellow-400 transition-colors font-semibold group"
                 >
                     <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                     Back to Dashboard
                 </button>
                 
                 {/* Header Section */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-xl overflow-hidden">
                     <div className="h-32 bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800"></div>
                     <div className="px-6 pb-6">
                         <div className="flex flex-col md:flex-row md:items-end md:justify-between -mt-16 gap-4">
-                            {/* Profile Photo & Basic Info */}
                             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4">
                                 <div className="relative group">
-                                    <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-100 overflow-hidden shadow-lg">
+                                    <div className="w-32 h-32 rounded-full border-4 border-slate-800 bg-slate-700 overflow-hidden shadow-xl">
                                         {user?.profileImageUrl ? (
                                             <img 
                                                 src={user.profileImageUrl} 
@@ -287,21 +256,20 @@ const Profile = () => {
                                 </div>
 
                                 <div className="text-center sm:text-left mb-2">
-                                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+                                    <h1 className="text-2xl md:text-3xl font-bold text-white">
                                         {user?.fullName || "User"}
                                     </h1>
-                                    <p className="text-gray-500 flex items-center gap-2 justify-center sm:justify-start mt-1">
+                                    <p className="text-gray-400 flex items-center gap-2 justify-center sm:justify-start mt-1">
                                         <Calendar className="w-4 h-4" />
                                         Member since {getMemberSince()}
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Edit Button */}
                             {!isEditing && (
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-lg transition-colors font-medium flex items-center gap-2 justify-center"
+                                    className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-2.5 rounded-lg transition-all font-bold flex items-center gap-2 justify-center hover:scale-105 shadow-lg"
                                 >
                                     <Edit2 className="w-4 h-4" />
                                     Edit Profile
@@ -314,60 +282,60 @@ const Profile = () => {
                 {/* Account Statistics Dashboard */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Total Balance */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:border-yellow-400/30 transition-all shadow-xl">
                         <div className="flex items-center justify-between mb-3">
-                            <div className="p-3 bg-purple-100 rounded-lg">
-                                <Wallet className="w-6 h-6 text-purple-600" />
+                            <div className="p-3 bg-purple-600/20 rounded-xl">
+                                <Wallet className="w-6 h-6 text-purple-400" />
                             </div>
-                            <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                                stats.totalBalance >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                            <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                                stats.totalBalance >= 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                             }`}>
                                 {stats.totalBalance >= 0 ? 'Positive' : 'Negative'}
                             </span>
                         </div>
-                        <h3 className="text-gray-600 text-sm font-medium mb-1">Total Balance</h3>
+                        <h3 className="text-gray-400 text-sm font-semibold mb-1">Total Balance</h3>
                         <p className={`text-2xl font-bold ${
-                            stats.totalBalance >= 0 ? 'text-green-600' : 'text-red-600'
+                            stats.totalBalance >= 0 ? 'text-green-400' : 'text-red-400'
                         }`}>
                             {formatCurrency(stats.totalBalance)}
                         </p>
                     </div>
 
                     {/* Total Income */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:border-yellow-400/30 transition-all shadow-xl">
                         <div className="flex items-center justify-between mb-3">
-                            <div className="p-3 bg-green-100 rounded-lg">
-                                <TrendingUp className="w-6 h-6 text-green-600" />
+                            <div className="p-3 bg-green-600/20 rounded-xl">
+                                <TrendingUp className="w-6 h-6 text-green-400" />
                             </div>
                         </div>
-                        <h3 className="text-gray-600 text-sm font-medium mb-1">Total Income</h3>
-                        <p className="text-2xl font-bold text-green-600">
+                        <h3 className="text-gray-400 text-sm font-semibold mb-1">Total Income</h3>
+                        <p className="text-2xl font-bold text-green-400">
                             {formatCurrency(stats.totalIncome)}
                         </p>
                     </div>
 
                     {/* Total Expenses */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:border-yellow-400/30 transition-all shadow-xl">
                         <div className="flex items-center justify-between mb-3">
-                            <div className="p-3 bg-red-100 rounded-lg">
-                                <TrendingDown className="w-6 h-6 text-red-600" />
+                            <div className="p-3 bg-red-600/20 rounded-xl">
+                                <TrendingDown className="w-6 h-6 text-red-400" />
                             </div>
                         </div>
-                        <h3 className="text-gray-600 text-sm font-medium mb-1">Total Expenses</h3>
-                        <p className="text-2xl font-bold text-red-600">
+                        <h3 className="text-gray-400 text-sm font-semibold mb-1">Total Expenses</h3>
+                        <p className="text-2xl font-bold text-red-400">
                             {formatCurrency(stats.totalExpense)}
                         </p>
                     </div>
 
                     {/* Total Transactions */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 hover:border-yellow-400/30 transition-all shadow-xl">
                         <div className="flex items-center justify-between mb-3">
-                            <div className="p-3 bg-blue-100 rounded-lg">
-                                <Activity className="w-6 h-6 text-blue-600" />
+                            <div className="p-3 bg-blue-600/20 rounded-xl">
+                                <Activity className="w-6 h-6 text-blue-400" />
                             </div>
                         </div>
-                        <h3 className="text-gray-600 text-sm font-medium mb-1">Total Transactions</h3>
-                        <p className="text-2xl font-bold text-gray-800">{getTotalTransactions()}</p>
+                        <h3 className="text-gray-400 text-sm font-semibold mb-1">Total Transactions</h3>
+                        <p className="text-2xl font-bold text-white">{getTotalTransactions()}</p>
                         <p className="text-xs text-gray-500 mt-1">Most used: {getMostUsedCategory()}</p>
                     </div>
                 </div>
@@ -376,9 +344,9 @@ const Profile = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Contact Information */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                                <User className="w-5 h-5 text-purple-600" />
+                        <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-xl">
+                            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <User className="w-5 h-5 text-yellow-400" />
                                 Contact Information
                             </h2>
                             <div className="space-y-4">
@@ -386,7 +354,7 @@ const Profile = () => {
                                     <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs text-gray-500 mb-1">Email</p>
-                                        <p className="text-sm text-gray-800 font-medium truncate">
+                                        <p className="text-sm text-white font-semibold truncate">
                                             {user?.email || "Not provided"}
                                         </p>
                                     </div>
@@ -396,7 +364,7 @@ const Profile = () => {
                                     <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs text-gray-500 mb-1">Phone</p>
-                                        <p className="text-sm text-gray-800 font-medium">
+                                        <p className="text-sm text-white font-semibold">
                                             {user?.phone || "Not provided"}
                                         </p>
                                     </div>
@@ -406,7 +374,7 @@ const Profile = () => {
                                     <Briefcase className="w-5 h-5 text-gray-400 mt-0.5" />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs text-gray-500 mb-1">Bio</p>
-                                        <p className="text-sm text-gray-800">
+                                        <p className="text-sm text-white">
                                             {user?.bio || "No bio yet"}
                                         </p>
                                     </div>
@@ -417,26 +385,24 @@ const Profile = () => {
 
                     {/* Edit Form */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                                <Edit2 className="w-5 h-5 text-purple-600" />
+                        <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-xl">
+                            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <Edit2 className="w-5 h-5 text-yellow-400" />
                                 {isEditing ? "Edit Your Information" : "Your Information"}
                             </h2>
 
                             <div className="space-y-4">
-                                {/* Profile Photo Upload (only show when editing) */}
                                 {isEditing && (
                                     <div>
-                                        <label className="text-sm font-medium text-gray-700 block mb-2">
+                                        <label className="text-sm font-semibold text-white block mb-2">
                                             Profile Photo
                                         </label>
                                         <ProfilePhotoSelector image={image} setImage={setImage} />
                                     </div>
                                 )}
 
-                                {/* Full Name */}
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700 block mb-2">
+                                    <label className="text-sm font-semibold text-white block mb-2">
                                         Full Name
                                     </label>
                                     <input
@@ -445,29 +411,27 @@ const Profile = () => {
                                         onChange={handleChange("fullName")}
                                         placeholder="John Doe"
                                         disabled={!isEditing || loading}
-                                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors ${
-                                            !isEditing ? 'bg-gray-50 cursor-not-allowed' : 'bg-white'
+                                        className={`w-full px-4 py-2.5 border border-white/20 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none transition-colors text-white ${
+                                            !isEditing ? 'bg-slate-700/30 cursor-not-allowed' : 'bg-slate-700/50'
                                         }`}
                                     />
                                 </div>
 
-                                {/* Email (Read-only) */}
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700 block mb-2">
+                                    <label className="text-sm font-semibold text-white block mb-2">
                                         Email Address
-                                        <span className="text-xs text-gray-500 ml-2">(Cannot be changed)</span>
+                                        <span className="text-xs text-gray-400 ml-2">(Cannot be changed)</span>
                                     </label>
                                     <input
                                         type="email"
                                         value={user?.email || ""}
                                         disabled
-                                        className="w-full px-4 py-2.5 border rounded-lg bg-gray-50 cursor-not-allowed text-gray-600"
+                                        className="w-full px-4 py-2.5 border border-white/20 rounded-lg bg-slate-700/30 cursor-not-allowed text-gray-400"
                                     />
                                 </div>
 
-                                {/* Phone */}
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700 block mb-2">
+                                    <label className="text-sm font-semibold text-white block mb-2">
                                         Phone Number
                                     </label>
                                     <input
@@ -476,15 +440,14 @@ const Profile = () => {
                                         onChange={handleChange("phone")}
                                         placeholder="09261540612"
                                         disabled={!isEditing || loading}
-                                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors ${
-                                            !isEditing ? 'bg-gray-50 cursor-not-allowed' : 'bg-white'
+                                        className={`w-full px-4 py-2.5 border border-white/20 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none transition-colors text-white ${
+                                            !isEditing ? 'bg-slate-700/30 cursor-not-allowed' : 'bg-slate-700/50'
                                         }`}
                                     />
                                 </div>
 
-                                {/* Bio */}
                                 <div>
-                                    <label className="text-sm font-medium text-gray-700 block mb-2">
+                                    <label className="text-sm font-semibold text-white block mb-2">
                                         Bio
                                     </label>
                                     <textarea
@@ -493,23 +456,22 @@ const Profile = () => {
                                         placeholder="Tell us about yourself..."
                                         rows={4}
                                         disabled={!isEditing || loading}
-                                        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-colors resize-none ${
-                                            !isEditing ? 'bg-gray-50 cursor-not-allowed' : 'bg-white'
+                                        className={`w-full px-4 py-2.5 border border-white/20 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none transition-colors resize-none text-white ${
+                                            !isEditing ? 'bg-slate-700/30 cursor-not-allowed' : 'bg-slate-700/50'
                                         }`}
                                     />
                                 </div>
 
-                                {/* Action Buttons */}
                                 {isEditing && (
                                     <div className="flex gap-3 pt-2">
                                         <button
                                             onClick={handleSubmit}
                                             disabled={loading}
-                                            className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                            className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-2.5 rounded-lg font-bold transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:scale-105 shadow-lg"
                                         >
                                             {loading ? (
                                                 <>
-                                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                    <div className="w-4 h-4 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
                                                     Saving...
                                                 </>
                                             ) : (
@@ -523,7 +485,7 @@ const Profile = () => {
                                         <button
                                             onClick={handleCancel}
                                             disabled={loading}
-                                            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-6 py-2.5 rounded-lg font-medium transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                                            className="flex-1 bg-slate-700/50 hover:bg-slate-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                                         >
                                             <X className="w-4 h-4" />
                                             Cancel

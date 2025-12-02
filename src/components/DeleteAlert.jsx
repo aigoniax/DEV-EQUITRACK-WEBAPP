@@ -1,8 +1,9 @@
 import { LoaderCircle } from "lucide-react";
-import React, { useState } from "react"; // Added useState import
+import React, { useState } from "react";
 
 const DeleteAlert = ({ content, onDelete }) => {
-    const [loading, setLoading] = useState(false); // Fixed useState usage
+    const [loading, setLoading] = useState(false);
+    
     const handleDelete = async () => {
         setLoading(true);
         try {
@@ -11,18 +12,20 @@ const DeleteAlert = ({ content, onDelete }) => {
             setLoading(false);
         }
     }
+    
     return (
         <div>
-            <p className="text-sm">{content}</p>
-            <div className="flex justify-end mt-6">
+            <p className="text-sm text-gray-300 font-medium leading-relaxed">{content}</p>
+            <div className="flex justify-end gap-3 mt-6">
                 <button 
                     onClick={handleDelete}
                     disabled={loading}
                     type="button"
-                    className="add-btn add-btn-fill">
+                    className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-lg hover:shadow-red-600/40 hover:scale-105 transition-all inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
                     {loading ? (
                         <>
-                            <LoaderCircle className="h-4 w-4 animate-spin"/> {/* Fixed: animated-spin -> animate-spin */}
+                            <LoaderCircle className="h-4 w-4 animate-spin" strokeWidth={2.5}/>
                             Deleting...
                         </>
                     ) : (
