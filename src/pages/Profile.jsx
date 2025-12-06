@@ -186,29 +186,6 @@ const Profile = () => {
         return stats.recentTransactions?.length || 0;
     };
 
-    const getMostUsedCategory = () => {
-        if (!stats.recentTransactions || stats.recentTransactions.length === 0) {
-            return "N/A";
-        }
-        
-        const categoryCounts = {};
-        stats.recentTransactions.forEach(transaction => {
-            const category = transaction.category || "Uncategorized";
-            categoryCounts[category] = (categoryCounts[category] || 0) + 1;
-        });
-        
-        let maxCount = 0;
-        let mostUsed = "N/A";
-        for (const [category, count] of Object.entries(categoryCounts)) {
-            if (count > maxCount) {
-                maxCount = count;
-                mostUsed = category;
-            }
-        }
-        
-        return mostUsed;
-    };
-
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#084062] to-blue-900 relative overflow-hidden">
             {/* Background Effects */}
@@ -344,7 +321,6 @@ const Profile = () => {
                             </div>
                             <h3 className="text-gray-400 text-sm font-semibold mb-2">Total Transactions</h3>
                             <p className="text-2xl font-bold text-white">{getTotalTransactions()}</p>
-                            <p className="text-xs text-gray-500 mt-2">Most used: {getMostUsedCategory()}</p>
                         </div>
                     </div>
 
