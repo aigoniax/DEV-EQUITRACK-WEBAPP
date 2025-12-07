@@ -63,7 +63,7 @@ const Header = () => {
           {/* Center Links (Gap-8 matches About Us) */}
           <div className="hidden md:flex items-center gap-8">
             <Link
-              to="/"
+              to="/landingpage"
               className="text-yellow-400 font-semibold relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-yellow-400"
             >
               Home

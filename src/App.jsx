@@ -12,7 +12,7 @@ import Home from "./pages/Home";
 import LandingPage from "./pages/LandingPage";
 import Profile from "./pages/Profile";
 import Wallet from "./pages/Wallet";
-import Budget from "./pages/Budget";  // ← Add this import
+import Budget from "./pages/Budget";
 
 const App = () => {
   return(
@@ -20,11 +20,11 @@ const App = () => {
       <Toaster />
       <BrowserRouter>
         <Routes>
-            <Route path="/" element={<Root />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/landingpage" element={<LandingPage />} />
             <Route path="/dashboard" element={<Home />} />
             <Route path="/wallets" element={<Wallet />} />
-            <Route path="/budgets" element={<Budget />} />  {/* ← Add this route */}
+            <Route path="/budgets" element={<Budget />} />
             <Route path="/income" element={<Income />} />
             <Route path="/expense" element={<Expense />} />
             <Route path="/category" element={<Category />} />
@@ -38,15 +38,6 @@ const App = () => {
     </BrowserRouter>
     </>
   )
-}
-
-const Root = () => {
-  const isAuthenticated = !!localStorage.getItem("token");
-  return isAuthenticated ? (
-    <Navigate to="/dashboard" />
-  ) : (
-    <Navigate to="/landingpage" />
-  );
 }
 
 export default App;

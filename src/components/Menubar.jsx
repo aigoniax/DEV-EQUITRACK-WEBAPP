@@ -14,7 +14,7 @@ const Menubar = ({ activeMenu }) => {
     const handleLogout = () => {
         clearUser();
         setShowDropdown(false);
-        navigate("/login");
+        navigate("/landingpage");
     };
 
     const closeSidebar = () => {

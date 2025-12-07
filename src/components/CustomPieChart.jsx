@@ -59,12 +59,12 @@ const CustomPieChart = ({ data = [], colors = [] }) => {
               cy="50%"
               labelLine={false}
               label={renderCustomLabel}
-              outerRadius={115}
+              outerRadius={120}
               fill="#8884d8"
               dataKey="amount"
               // CHANGED: Solid White Border
               stroke="#ffffff" 
-              strokeWidth={2}
+              strokeWidth={1}
             >
               {data.map((entry, index) => (
                 <Cell 
