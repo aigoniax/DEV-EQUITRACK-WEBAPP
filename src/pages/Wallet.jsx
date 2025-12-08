@@ -28,7 +28,7 @@ const Wallet = () => {
 
     const profileId = user?.id;
 
-    // --- FETCH FUNCTIONS (UNCHANGED) ---
+    // --- FETCH FUNCTIONS ---
     const fetchWallets = async () => {
         if (loading || !profileId) return;
         setLoading(true);
@@ -54,11 +54,16 @@ const Wallet = () => {
         if (!profileId) return;
         try {
             const response = await axiosConfig.get(API_ENDPOINTS.GET_TRANSACTIONS(profileId)); 
-            if (response.status === 200) setTransactions(response.data); 
-        } catch (error) { console.error(error); }
+            if (response.status === 200) {
+                console.log("Transactions fetched:", response.data); // Debug log
+                setTransactions(response.data);
+            }
+        } catch (error) { 
+            console.error("Error fetching transactions:", error);
+        }
     };
 
-    // --- HANDLERS (UNCHANGED) ---
+    // --- HANDLERS ---
     const handleAddWallet = async (walletData) => {
         const { walletType } = walletData;
         if (!walletType?.trim()) return toast.error("Please enter a wallet name");
@@ -67,22 +72,41 @@ const Wallet = () => {
             if (response.status === 200) {
                 setOpenAddWalletModal(false);
                 toast.success("Wallet created successfully");
-                fetchWallets(); fetchTotalBalance();
+                fetchWallets(); 
+                fetchTotalBalance();
             }
-        } catch (error) { toast.error("Failed to create wallet"); }
+        } catch (error) { 
+            toast.error(error.response?.data?.message || "Failed to create wallet"); 
+        }
     };
 
     const handleTransaction = async (walletId, amount, type) => {
         if (!amount || Number(amount) <= 0) return toast.error("Invalid amount");
-        const endpoint = type === 'deposit' ? API_ENDPOINTS.DEPOSIT_WALLET(walletId) : API_ENDPOINTS.WITHDRAW_WALLET(walletId);
+        
+        // Check if withdrawal is valid
+        if (type === 'withdraw') {
+            const wallet = wallets.find(w => w.id === walletId);
+            if (!wallet) return toast.error("Wallet not found");
+            if (wallet.balance === 0) return toast.error("Cannot withdraw from empty wallet");
+            if (Number(amount) > wallet.balance) return toast.error("Insufficient balance");
+        }
+
+        const endpoint = type === 'deposit' 
+            ? API_ENDPOINTS.DEPOSIT_WALLET(walletId) 
+            : API_ENDPOINTS.WITHDRAW_WALLET(walletId);
+        
         try {
             const response = await axiosConfig.post(endpoint, { amount: Number(amount) });
             if (response.status === 200) {
                 setOpenTransactionModal({ show: false, type: null, walletId: null });
-                toast.success("Transaction successful");
-                fetchWallets(); fetchTotalBalance(); fetchTransactions();
+                toast.success(`${type === 'deposit' ? 'Deposit' : 'Withdrawal'} successful`);
+                fetchWallets(); 
+                fetchTotalBalance(); 
+                fetchTransactions();
             }
-        } catch (error) { toast.error("Transaction failed"); }
+        } catch (error) { 
+            toast.error(error.response?.data?.message || "Transaction failed"); 
+        }
     };
 
     const deleteWallet = async (walletId) => {
@@ -90,13 +114,27 @@ const Wallet = () => {
             await axiosConfig.delete(API_ENDPOINTS.DELETE_WALLET(walletId));
             setOpenDeleteAlert({ show: false, data: null });
             toast.success("Wallet deleted");
-            fetchWallets(); fetchTotalBalance(); fetchTransactions();
-        } catch (error) { toast.error("Failed to delete wallet"); }
+            fetchWallets(); 
+            fetchTotalBalance(); 
+            fetchTransactions();
+        } catch (error) { 
+            toast.error(error.response?.data?.message || "Failed to delete wallet"); 
+        }
+    };
+
+    // Handler for withdraw button - check balance before opening modal
+    const handleWithdrawClick = (walletId) => {
+        const wallet = wallets.find(w => w.id === walletId);
+        if (!wallet) return toast.error("Wallet not found");
+        if (wallet.balance === 0) return toast.error("Cannot withdraw from empty wallet");
+        setOpenTransactionModal({ show: true, type: 'withdraw', walletId });
     };
 
     useEffect(() => {
         if (!profileId) return;
-        fetchWallets(); fetchTotalBalance(); fetchTransactions();
+        fetchWallets(); 
+        fetchTotalBalance(); 
+        fetchTransactions();
     }, [profileId]);
 
     return (
@@ -142,7 +180,7 @@ const Wallet = () => {
                                 <WalletList
                                     wallets={wallets}
                                     onDeposit={(id) => setOpenTransactionModal({ show: true, type: 'deposit', walletId: id })}
-                                    onWithdraw={(id) => setOpenTransactionModal({ show: true, type: 'withdraw', walletId: id })}
+                                    onWithdraw={handleWithdrawClick}
                                     onDelete={(id) => setOpenDeleteAlert({ show: true, data: id })}
                                 />
                             </div>
@@ -150,12 +188,11 @@ const Wallet = () => {
 
                         {/* RIGHT COLUMN: History Sidebar (Spans 4 cols) */}
                         <div className="lg:col-span-4">
-                            {/* ✅ FIX: Removed the sticky wrapper so it stretches to match height */}
                             <TransactionHistory transactions={transactions} /> 
                         </div>
                     </div>
 
-                    {/* Modals remain the same */}
+                    {/* Modals */}
                     <Modal isOpen={openAddWalletModal} onClose={() => setOpenAddWalletModal(false)} title="Create New Wallet">
                         <AddWalletForm onSubmit={handleAddWallet} />
                     </Modal>
