@@ -64,7 +64,6 @@ const Home = () => {
                 <div className="absolute top-1/4 left-10 md:left-20 w-96 h-96 bg-yellow-400/25 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-1/4 right-10 md:right-20 w-[500px] h-[500px] bg-blue-400/25 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }}></div>
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
             </div>
 
             <Dashboard activeMenu="Dashboard">
@@ -168,81 +167,79 @@ const Home = () => {
                                 </div>
                             </div>
 
-                            {/* 4. IMPROVED FINANCIAL ASSETS SECTION */}
-                            {wallets.length > 0 && (
-                                <div className="mt-8 pt-10 border-t border-white/10 animate-fade-in">
-                                    {/* Section Header */}
-                                    <div className="flex items-center justify-between mb-8">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20 backdrop-blur-sm">
-                                                <Wallet size={22} className="text-blue-400" />
-                                            </div>
-                                            <div>
-                                                <h2 className="text-2xl font-bold text-white tracking-wide">Financial Assets</h2>
-                                                <p className="text-slate-400 text-sm">Your active wallets and balances</p>
-                                            </div>
+                            {/* 4. IMPROVED FINANCIAL ASSETS SECTION - Always visible */}
+                            <div className="mt-8 pt-10 border-t border-white/10 animate-fade-in">
+                                {/* Section Header */}
+                                <div className="flex items-center justify-between mb-8">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20 backdrop-blur-sm">
+                                            <WalletCards size={22} className="text-blue-400" />
                                         </div>
-                                        <button 
-                                            onClick={() => navigate('/wallets')}
-                                            className="text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center gap-1 group bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-full border border-white/5 hover:border-white/20"
-                                        >
-                                            Manage All <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                                        </button>
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-white tracking-wide">Financial Assets</h2>
+                                            <p className="text-slate-400 text-sm">Your active wallets and balances</p>
+                                        </div>
                                     </div>
-                                    
-                                    {/* Premium Wallet Grid */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                        {wallets.map((wallet) => (
-                                            <div 
-                                                key={wallet.id}
-                                                onClick={() => navigate('/wallets')}
-                                                className="group relative overflow-hidden h-[180px] rounded-3xl p-6 cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/30 border border-slate-700/50 bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-md"
-                                            >
-                                                {/* Card Background Glow */}
-                                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 blur-3xl rounded-full opacity-40 group-hover:opacity-80 transition-all duration-500"></div>
+                                    <button 
+                                        onClick={() => navigate('/wallets')}
+                                        className="text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center gap-1 group bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-full border border-white/5 hover:border-white/20"
+                                    >
+                                        Manage All <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                    </button>
+                                </div>
+                                
+                                {/* Premium Wallet Grid */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    {wallets.length > 0 && wallets.map((wallet) => (
+                                        <div 
+                                            key={wallet.id}
+                                            onClick={() => navigate('/wallets')}
+                                            className="group relative overflow-hidden h-[180px] rounded-3xl p-6 cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/30 border border-slate-700/50 bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-md"
+                                        >
+                                            {/* Card Background Glow */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 blur-3xl rounded-full opacity-40 group-hover:opacity-80 transition-all duration-500"></div>
 
-                                                <div className="relative z-10 flex flex-col h-full justify-between">
-                                                    {/* Top Row: Icon & Chip */}
-                                                    <div className="flex justify-between items-start">
-                                                        <div className="p-3 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl border border-white/10 shadow-inner group-hover:scale-110 transition-transform duration-300">
-                                                            <CreditCard size={20} className="text-blue-300 drop-shadow-md" />
-                                                        </div>
-                                                        {/* Currency Pill */}
-                                                        <span className="text-[10px] font-extrabold px-3 py-1 rounded-full bg-black/30 border border-white/10 text-slate-400 uppercase tracking-widest group-hover:text-white group-hover:border-blue-400/30 transition-all">
-                                                            {wallet.currency}
-                                                        </span>
+                                            <div className="relative z-10 flex flex-col h-full justify-between">
+                                                {/* Top Row: Icon & Chip */}
+                                                <div className="flex justify-between items-start">
+                                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/20 text-white">
+                                                        <Wallet size={24} strokeWidth={2.5} />
                                                     </div>
+                                                    {/* Currency Pill */}
+                                                    <span className="text-[10px] font-extrabold px-3 py-1 rounded-full bg-black/30 border border-white/10 text-slate-400 uppercase tracking-widest group-hover:text-white group-hover:border-blue-400/30 transition-all">
+                                                        {wallet.currency}
+                                                    </span>
+                                                </div>
 
-                                                    {/* Bottom Row: Details */}
-                                                    <div>
-                                                        <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1 truncate group-hover:text-blue-200 transition-colors">
-                                                            {wallet.walletType}
-                                                        </h3>
-                                                        <div className="flex items-baseline gap-1">
-                                                            <span className="text-lg text-slate-500 font-semibold group-hover:text-blue-300 transition-colors">₱</span>
-                                                            <h4 className="text-3xl font-black text-white tracking-tighter drop-shadow-lg">
-                                                                {addThousandsSeparator(wallet.balance)}
-                                                            </h4>
-                                                        </div>
+                                                {/* Bottom Row: Details */}
+                                                <div>
+                                                    <h3 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1 truncate group-hover:text-blue-200 transition-colors">
+                                                        {wallet.walletType}
+                                                    </h3>
+                                                    <div className="flex items-baseline gap-1">
+                                                        <span className="text-lg text-slate-500 font-semibold group-hover:text-blue-300 transition-colors">₱</span>
+                                                        <h4 className="text-3xl font-black text-white tracking-tighter drop-shadow-lg">
+                                                            {addThousandsSeparator(wallet.balance)}
+                                                        </h4>
                                                     </div>
                                                 </div>
                                             </div>
-                                        ))}
-
-                                        {/* "Add New" Ghost Card */}
-                                        <div 
-                                            onClick={() => navigate('/wallets')}
-                                            className="h-[180px] rounded-3xl border-2 border-dashed border-slate-700/50 bg-slate-800/40 hover:bg-slate-800/60 hover:border-yellow-400/50 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-4 group"
-                                        >
-                                            <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-yellow-400/20 transition-all duration-300 group-hover:scale-110 shadow-lg group-hover:shadow-yellow-400/10">
-                                                <Plus size={24} className="text-slate-500 group-hover:text-yellow-400 transition-colors" />
-                                            </div>
-                                            <span className="text-sm font-bold text-slate-500 group-hover:text-yellow-400 transition-colors tracking-wide uppercase text-xs">Create New Wallet</span>
                                         </div>
+                                    ))}
+
+                                    {/* "Add New" Ghost Card - Always visible */}
+                                    <div 
+                                        onClick={() => navigate('/wallets')}
+                                        className="h-[180px] rounded-3xl border-2 border-dashed border-slate-700/50 bg-slate-800/40 hover:bg-slate-800/60 hover:border-yellow-400/50 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-4 group"
+                                    >
+                                        <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-yellow-400/20 transition-all duration-300 group-hover:scale-110 shadow-lg group-hover:shadow-yellow-400/10">
+                                            <Plus size={24} className="text-slate-500 group-hover:text-yellow-400 transition-colors" />
+                                        </div>
+                                        <span className="text-sm font-bold text-slate-500 group-hover:text-yellow-400 transition-colors tracking-wide uppercase text-xs">Create New Wallet</span>
                                     </div>
                                 </div>
-                            )}
+                            </div>
 
                         </div>
                     )}
@@ -252,4 +249,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default Home
